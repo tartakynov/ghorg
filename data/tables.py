@@ -17,7 +17,7 @@ class Organization(Base):
     created_at = Column(DateTime)
     has_linkedin = Column(Boolean)
     has_careers_page = Column(Boolean)
-    country = Column(String(255))
+    suggested_country = Column(String(255))
 
     uix_name = UniqueConstraint(name)
 
