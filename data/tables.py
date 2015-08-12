@@ -15,6 +15,9 @@ class Organization(Base):
     url_github = Column(String(255))
     url_site = Column(String(255))
     created_at = Column(DateTime)
+    has_linkedin = Column(Boolean)
+    has_careers_page = Column(Boolean)
+    country = Column(String(255))
 
     uix_name = UniqueConstraint(name)
 
