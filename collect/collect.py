@@ -5,7 +5,7 @@ import urllib2
 import csv
 import time
 import json
-import sys
+import argparse
 from dateutil.parser import parse
 from data.tables import *
 from urlparse import urlparse
@@ -13,14 +13,14 @@ from sqlalchemy import func
 from py4j.java_gateway import JavaGateway
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print 'usage: prog <config.json>'
-        exit(0)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', type = argparse.FileType('r'), help = 'config file in JSON format')
+    parser.add_argument('organizations', type = argparse.FileType('r'), help = 'GitHub organizations CSV [name, #forks]')
+    args = parser.parse_args()
 
     gateway = JavaGateway()
     locationApp = gateway.entry_point
-    with open(sys.argv[1], 'rb') as fin:
-        config = json.load(fin)
+    config = json.load(args.config)
 
     def normalizeUrl(url):
         if not url:
@@ -31,10 +31,9 @@ if __name__ == '__main__':
         return '%s://%s/%s%s' % (scheme, netloc.rstrip('/'), path.lstrip('/'), '?' + query if query else '')
 
     def queryResults():
-        with open('gharchive/query-results.csv', 'rb') as fin:
-            reader = csv.reader(fin)
-            next(reader)
-            return [(name, int(forks)) for name, forks in reader]
+        reader = csv.reader(args.organizations)
+        next(reader)
+        return [(name, int(forks)) for name, forks in reader]
 
     def obeyRateLimit(headers):
         remaining = int(headers['X-RateLimit-Remaining'])
@@ -82,3 +81,4 @@ if __name__ == '__main__':
 
             elapsed = (time.time() - startTime) * 1000
             print '%d. %s, elapsed %dms, left %d' % (pos, name, elapsed, len(rows) - pos)
+    gateway.shutdown()

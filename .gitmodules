@@ -1,0 +1,3 @@
+[submodule "locationparser"]
+	path = locationparser
+	url = git@github.com:tartakynov/locationparser.git
