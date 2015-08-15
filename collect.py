@@ -5,6 +5,7 @@ import urllib2
 import csv
 import time
 import json
+import sys
 from dateutil.parser import parse
 from data.tables import *
 from urlparse import urlparse
@@ -12,9 +13,13 @@ from sqlalchemy import func
 from py4j.java_gateway import JavaGateway
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print 'usage: prog <config.json>'
+        exit(0)
+
     gateway = JavaGateway()
     locationApp = gateway.entry_point
-    with open('config.json', 'rb') as fin:
+    with open(sys.argv[1], 'rb') as fin:
         config = json.load(fin)
 
     def normalizeUrl(url):
