@@ -1,3 +1,8 @@
 #!/bin/bash
 
-python collect/collect.py config.json gharchive/query-results.csv
+if [ ! $# -eq 1 ]; then
+    echo "Usage: $0 <config.json>"
+    exit 0
+fi
+
+python collect/collect.py $1  gharchive/query-results.csv
