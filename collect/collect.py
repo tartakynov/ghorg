@@ -11,15 +11,9 @@ from data.tables import *
 from urlparse import urlparse
 from sqlalchemy import func
 from py4j.java_gateway import JavaGateway
+from py4j.protocol import Py4JNetworkError
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('config', type = argparse.FileType('r'), help = 'config file in JSON format')
-    parser.add_argument('organizations', type = argparse.FileType('r'), help = 'GitHub organizations CSV [name, #forks]')
-    args = parser.parse_args()
-
-    gateway = JavaGateway()
-    locationApp = gateway.entry_point
+def main(args, locationApp):
     config = json.load(args.config)
 
     def normalizeUrl(url):
@@ -81,4 +75,16 @@ if __name__ == '__main__':
 
             elapsed = (time.time() - startTime) * 1000
             print '%d. %s, elapsed %dms, left %d' % (pos, name, elapsed, len(rows) - pos)
-    gateway.shutdown()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', type = argparse.FileType('r'), help = 'config file in JSON format')
+    parser.add_argument('organizations', type = argparse.FileType('r'), help = 'GitHub organizations CSV [name, #forks]')
+    args = parser.parse_args()
+    gateway = JavaGateway()
+    locationApp = gateway.entry_point
+
+    try:
+        main(args, locationApp)
+    except Py4JNetworkError:
+        print 'Make sure that locationparser is running'
