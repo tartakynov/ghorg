@@ -6,6 +6,7 @@ import csv
 import time
 import json
 import argparse
+from datetime import datetime, timedelta
 from dateutil.parser import parse
 from data.tables import *
 from urlparse import urlparse
@@ -33,8 +34,8 @@ def main(args, locationApp):
         remaining = int(headers['X-RateLimit-Remaining'])
         reset = long(headers['X-RateLimit-Reset'])
         if remaining < 3:
-            tts = reset - time.time()
-            print 'sleeping for %f sec due to GitHub rate limit' % tts
+            tts = reset - time.time() + 1
+            print 'sleep until {time:%H:%M:%S} due to GitHub rate limit'.format(time = datetime.today() + timedelta(seconds = tts))
             time.sleep(tts)
 
     def createOrganization(name, forks):
